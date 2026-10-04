@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AppThere overlay manifest.
+
+  Included LAST from default.xml, so entries here win over upstream AOSP.
+
+  Two jobs:
+    1. Declare projects that exist only in AppThere (device trees, vendor overlay).
+    2. Carry "fork-on-write" overrides: when we need to patch an upstream AOSP
+       project, we mirror it to github.com/AppThere/ and redirect it here.
+
+  Why fork-on-write instead of mirroring all 1087 AOSP projects?
+    - Mirroring the whole tree is ~200 GB of GitHub storage and buys nothing:
+      unmodified projects are better fetched straight from googlesource.
+    - A short override list is a precise, reviewable statement of exactly how
+      AppThere diverges from AOSP 17. That list IS the fork.
+
+  To fork an upstream project (see scripts/fork-upstream.sh):
+      <remove-project name="platform/frameworks/base" />
+      <project path="frameworks/base"
+               name="platform_frameworks_base"
+               remote="appthere"
+               revision="appthere-17" />
+
+  Projects on the "appthere" remote MUST set revision explicitly: the manifest
+  default revision is refs/tags/android-17.0.0_r1, which does not exist in our
+  repos.
+-->
+<manifest>
+
+  <!-- ==== AppThere-only projects ==================================== -->
+
+  <!-- Device trees: appthere_arm64 / appthere_x86_64 generic targets, plus
+       per-device trees (bluejay = Pixel 6a, chromebook x86_64 laptop). -->
+  <project path="device/appthere"
+           name="device_appthere"
+           remote="appthere"
+           revision="main"
+           groups="appthere" />
+
+  <!-- Branding, product config, AppThere app prebuilts (Loki, mdWriter,
+       Midgard, narfi), bootanimation, overlays. -->
+  <project path="vendor/appthere"
+           name="vendor_appthere"
+           remote="appthere"
+           revision="main"
+           groups="appthere" />
+
+  <!-- ==== Fork-on-write overrides ================================== -->
+  <!-- Empty at bring-up. Each entry added here is a deliberate divergence
+       from AOSP 17 and must be recorded in docs/DIVERGENCE.md. -->
+
+</manifest>

@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
+  <!-- AppThere: upstream AOSP. fetch MUST be absolute: the original fetch=".."
+       resolved relative to the manifest URL, which is no longer googlesource. -->
   <remote  name="aosp"
-           fetch=".."
+           fetch="https://android.googlesource.com/"
            review="https://android-review.googlesource.com/" />
+  <!-- AppThere: our own forks. Projects move here fork-on-write. -->
+  <remote  name="appthere"
+           fetch="https://github.com/AppThere/" />
   <default revision="refs/tags/android-17.0.0_r1"
            remote="aosp"
            sync-j="4" />
-  <superproject name="platform/superproject" remote="aosp" revision="android-17.0.0_r1"/>
-  <contactinfo bugurl="go/repo-bug" />
+  <!-- AppThere: upstream superproject element removed. It pins an exact SHA for
+       every project, which conflicts with the fork-on-write overrides in
+       appthere.xml. Sync is slower without it but correct. -->
+  <contactinfo bugurl="https://github.com/AppThere/manifest/issues" />
   <!-- BEGIN open-source projects -->
   <project path="build/make" name="platform/build" groups="pdk,sysui-studio" >
     <linkfile src="CleanSpec.mk" dest="build/CleanSpec.mk" />
@@ -1115,5 +1122,8 @@
     <copyfile src="lk_inc.mk" dest="lk_inc.mk" />
   </project>
   <!-- END open-source projects -->
+
+  <!-- AppThere overlay: new projects + fork-on-write overrides. Last include wins. -->
+  <include name="appthere.xml" />
 
 </manifest>
